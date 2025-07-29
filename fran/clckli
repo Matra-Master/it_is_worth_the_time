@@ -1,0 +1,11 @@
+#!/bin/bash
+#Custom script to work with clockify-cli
+# SHOULD work to easily create a task for me, maybe stop it later
+
+PROJECT=$(cat ~/.local/bin/clocky-cli/projects | fzf --prompt='PROJECT > ')
+DESCRIPTION=$(gum input --prompt="Descripción > ")
+TAG=$(cat ~/.local/bin/clocky-cli/tags | fzf --prompt='TAG > ')
+
+# Debug print
+#printf "clockify-cli in --description '$DESCRIPTION' --project '$PROJECT' --tag '$TAG' $*"
+clockify-cli in --description "$DESCRIPTION" --project "$PROJECT" --tag "$TAG" --interactive=0 $*

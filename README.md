@@ -5,6 +5,11 @@ Acá van todos los scripts falopas que querramos dejar como referencia para hace
 
 Uno debería tratar de hacerlos explicables para que luego sea fácil recorrerlos.
 
+# Folders
+
+Pensé en poner una carpeta por persona para que se puedan guardar los scripts crudos personales, tipo esos que hicimos para nosotros y que van de referencia.
+Luego una carpeta común donde poner los resultados de combinar scripts.
+
 
 ## Common issues
 
