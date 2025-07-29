@@ -1,4 +1,4 @@
-[xkcd joke](/images/is_it_worth_the_time.png)
+![xkcd joke](https://github.com/user-attachments/assets/d16eadde-abb3-4bcc-9430-31bb5cc1560e)
 > “Give me six hours to chop down a tree and I will spend the first four sharpening the axe.” -- Abraham Lincoln
 
 Acá van todos los scripts falopas que querramos dejar como referencia para hacer más scripts falopas.
