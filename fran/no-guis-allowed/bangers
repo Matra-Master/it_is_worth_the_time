@@ -1,0 +1,11 @@
+#!/bin/bash
+# Requirements: mpv, yt-dlp
+# A script to play a youtube playlist with mpv in shuffle mode and no video
+
+#TODO: add a way to pass a playlist as an argument
+#TODO: fzf from a list of playlists if no argument is given
+
+#The BANGERS from the Primeagen
+YOUTUBE_PLAYLIST="https://www.youtube.com/playlist?list=PLm323Lc7iSW9oSIDihesMJXmMNfh8U59k"
+
+mpv --ytdl ytdl_path=/usr/bin/yt-dlp --shuffle --no-vid "$YOUTUBE_PLAYLIST"

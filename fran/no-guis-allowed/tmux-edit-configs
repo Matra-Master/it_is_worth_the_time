@@ -1,0 +1,38 @@
+#!/bin/bash
+# Requirements: tmux, fzf, nvim
+# Dada una lista de configs y dotfiles, abrir el elegido en nvim en una nueva pestaña de tmux.
+# Se puede reemplazar tmux por lo que sea como kitty tabs.
+# Lo mismo con neovim, se puede reemplazar por cualquier editor.
+
+CONFIGS="$HOME/.bashrc
+$HOME/.config/alacritty
+$HOME/.config/fish
+$HOME/.config/fuzzel
+$HOME/.config/ghostty
+$HOME/.config/hypr
+$HOME/.config/kitty
+$HOME/.config/niri
+$HOME/.config/nvim
+$HOME/.config/sesh
+$HOME/.config/tmux
+$HOME/.config/waybar
+$HOME/.config/yazi
+$HOME/.local/bin
+$HOME/.mozilla/firefox
+$HOME/.ssh
+$HOME/.zshrc
+$HOME/aliases
+$HOME/dotfiles
+"
+SELECTED=$(echo "$CONFIGS" | fzf --tmux)
+SELECTED_NAME=$(basename "$SELECTED" | tr . _)
+
+if [ -f "$SELECTED" ]; then
+    # If a file is selected
+    tmux new-window -n "$SELECTED_NAME" nvim "$SELECTED" && exit 0
+fi
+if [ -d "$SELECTED" ]; then
+    # If a directory is selected
+    tmux new-window -n "$SELECTED_NAME" -c "$SELECTED" nvim .
+    # This is a tmux specific thing where -c sets the starting directory of the new window
+fi
