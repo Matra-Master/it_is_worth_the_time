@@ -1,12 +1,54 @@
 #!/usr/bin/env node
 
-// Crea ramas a partir de nombres de tickets pasados por consola
-// Ejemplo ticket-branch "#123 User Story" "#123Task" -> TG-123-#123task
-
 const { execSync } = require("child_process");
 const readline = require("readline");
 
-let [userStory, task] = process.argv.slice(2);
+const showHelp = () => {
+  console.log(`
+Usage: ticket-branch [flag] [userStory] [task]
+
+Flags:
+  -create, -c         Crea una nueva rama (por defecto si no se especifica flag)
+  -rename, -u, -update Renombra la rama actual siguiendo la convención
+
+Arguments:
+  userStory: El nombre de la user story o el número de ticket.
+  task:      (Opcional) El nombre de la task.
+
+Ejemplos:
+  ticket-branch -c "Mi nueva feature"
+  ticket-branch -rename "12345" "Implementar backend"
+  ticket-branch "Solo user story"
+
+Si no se pasan argumentos, el script los pedirá por consola.
+  `);
+  process.exit(0);
+};
+
+if (process.argv.includes("--help")) {
+  showHelp();
+}
+
+// Flags
+const flags = {
+  create: ["-create", "-c"],
+  rename: ["-rename", "-u", "-update"],
+};
+
+let mode = "create";
+let args = process.argv.slice(2).filter((arg) => {
+  if (flags.create.includes(arg)) {
+    mode = "create";
+    return false;
+  }
+  if (flags.rename.includes(arg)) {
+    mode = "rename";
+    return false;
+  }
+  return true;
+});
+
+let [userStory, task] = args;
 
 const normalizeText = (text) =>
   text
@@ -23,30 +65,39 @@ const extractNumbers = (text) => {
     : normalizeText(text).toLowerCase().replace(/\s+/g, "_");
 };
 
-const createBranch = () => {
-  const formatted =
-    "TG-" +
-    (task
-      ? extractNumbers(userStory)
-      : normalizeText(userStory).toLowerCase().replace(/\s+/g, "_")) +
-    (task ? `-#${normalizeText(task).toLowerCase().replace(/\s+/g, "_")}` : "");
+const getBranchName = () =>
+  "TG-" +
+  (task
+    ? extractNumbers(userStory)
+    : normalizeText(userStory).toLowerCase().replace(/\s+/g, "_")) +
+  (task ? `-#${normalizeText(task).toLowerCase().replace(/\s+/g, "_")}` : "");
 
+const createBranch = (branchName) => {
   try {
     console.log("Creado con exito ~(^-^)~");
-    execSync(`git checkout -b ${formatted}`);
+    execSync(`git checkout -b ${branchName}`, { stdio: "inherit" });
   } catch (e) {
     console.error("Error ejecutando git:", e.message);
   }
 };
 
-if (!userStory) {
+const renameBranch = (branchName) => {
+  try {
+    execSync(`git branch -m ${branchName}`, { stdio: "inherit" });
+    console.log(`Rama renombrada a ${branchName} ~(^-^)~`);
+  } catch (e) {
+    console.error("Error renombrando rama:", e.message);
+  }
+};
+
+const promptForArgs = () => {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
   rl.question(
-    "No se detectó una user story. ¿Desea ingresar una? (Ingresá ambos valores entre comillas)",
+    "No se detectó una user story. ¿Desea ingresar una? (Ingresá ambos valores entre comillas) ",
     (answer) => {
       const matches = [...answer.matchAll(/"([^"]+)"/g)];
 
@@ -66,9 +117,15 @@ if (!userStory) {
       }
 
       rl.close();
-      createBranch();
+      const branchName = getBranchName();
+      mode === "rename" ? renameBranch(branchName) : createBranch(branchName);
     }
   );
+};
+
+if (!userStory) {
+  promptForArgs();
 } else {
-  createBranch();
+  const branchName = getBranchName();
+  mode === "rename" ? renameBranch(branchName) : createBranch(branchName);
 }
